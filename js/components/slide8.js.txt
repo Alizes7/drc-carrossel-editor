@@ -1,0 +1,42 @@
+window.slideComponents.slide8 = {
+    id: 8,
+    name: "Variação Fechamento",
+    defaultData: {
+        header: "FECHAMENTO",
+        quote: "\"Frase de encerramento com força e autoridade.\"",
+        label: "FALE CONOSCO",
+        cta: "Texto do CTA principal →",
+        link: "Link ou contato secundário",
+        contact: "contato@drcadvogados.com.br",
+        social: "@drcadvogados",
+        brand: "DRC Advogados",
+        counter: "08 / 08"
+    },
+    
+    render(data) {
+        return `
+            <div class="slide slide-8" data-slide="8">
+                <div class="slide-8__header">${data.header}</div>
+                
+                <blockquote class="slide-8__quote" contenteditable="false">
+                    ${data.quote}
+                </blockquote>
+                
+                <div class="slide-8__box">
+                    <div class="slide-8__label">${data.label}</div>
+                    <div class="slide-8__cta" contenteditable="false">${data.cta}</div>
+                    <div class="slide-8__contacts">
+                        <span contenteditable="false">${data.link}</span>
+                        <span contenteditable="false">${data.contact}</span>
+                    </div>
+                </div>
+                
+                <div class="slide-8__footer">
+                    <span>${data.brand}</span>
+                    <span>${data.social}</span>
+                    <span>${data.counter}</span>
+                </div>
+            </div>
+        `;
+    }
+};

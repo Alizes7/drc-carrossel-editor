@@ -1,0 +1,28 @@
+window.slideComponents.slide2 = {
+    id: 2,
+    name: "Introdução",
+    defaultData: {
+        header: "02 · INTRODUÇÃO",
+        quote: "\"Frase-chave de impacto que introduz o tema da publicação.\"",
+        text: "Parágrafo curto de storytelling que contextualiza o leitor. Apresenta o problema de forma direta e empática, conectando com a realidade do público-alvo do escritório.",
+        imageText: "IMAGEM DE APOIO",
+        footer: "DRC Advogados",
+        counter: "02 / 08"
+    },
+    
+    render(data) {
+        return `
+            <div class="slide slide-2" data-slide="2">
+                <div class="slide-2__image">
+                    <span>${data.imageText}</span>
+                </div>
+                <div class="slide-2__content">
+                    <div class="slide-2__header" contenteditable="false">${data.header}</div>
+                    <blockquote class="slide-2__quote" contenteditable="false">${data.quote}</blockquote>
+                    <p class="slide-2__text" contenteditable="false">${data.text}</p>
+                    <div class="slide-2__footer">${data.counter} · ${data.footer}</div>
+                </div>
+            </div>
+        `;
+    }
+};

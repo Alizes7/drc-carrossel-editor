@@ -1,0 +1,45 @@
+window.slideComponents = window.slideComponents || {};
+
+window.slideComponents.slide1 = {
+    id: 1,
+    name: "Capa Principal",
+    defaultData: {
+        header: "CONTEÚDO JURÍDICO",
+        title: "TÍTULO PRINCIPAL DA PUBLICAÇÃO",
+        subtitle: "Subtítulo da publicação",
+        category: "Categoria",
+        area: "Área do Direito",
+        graphicText: "ELEMENTO GRÁFICO / IMAGEM",
+        brand: "DRC Advogados",
+        social: "@drcadvogados",
+        counter: "01 / 08"
+    },
+    
+    render(data) {
+        return `
+            <div class="slide slide-1" data-slide="1">
+                <div class="slide-1__header" contenteditable="false">${data.header}</div>
+                
+                <div class="slide-1__content">
+                    <h1 class="slide-1__title" contenteditable="false">${data.title}</h1>
+                    <div class="slide-1__meta">
+                        <span contenteditable="false">${data.subtitle}</span>
+                        <span contenteditable="false">${data.category}</span>
+                        <span contenteditable="false">${data.area}</span>
+                    </div>
+                </div>
+                
+                <div class="slide-1__graphic" contenteditable="false">
+                    ${data.graphicText}
+                </div>
+                
+                <div class="slide-1__counter" contenteditable="false">${data.counter}</div>
+                
+                <div class="slide-1__footer">
+                    <div class="slide-1__brand" contenteditable="false">${data.brand}</div>
+                    <div class="slide-1__social" contenteditable="false">${data.social}</div>
+                </div>
+            </div>
+        `;
+    }
+};
