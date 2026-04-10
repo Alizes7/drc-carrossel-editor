@@ -1,0 +1,248 @@
+// Controlador de Edição
+const EditorController = {
+    init() {
+        this.bindEvents();
+        this.renderThumbs();
+    },
+    
+    bindEvents() {
+        // Toggle edição
+        document.getElementById('toggleEdit').addEventListener('click', () => {
+            AppState.isEditing = !AppState.isEditing;
+            this.toggleEditMode();
+        });
+        
+        // Navegação
+        document.getElementById('prevSlide').addEventListener('click', () => this.navigate(-1));
+        document.getElementById('nextSlide').addEventListener('click', () => this.navigate(1));
+        
+        // Ações
+        document.getElementById('resetSlide').addEventListener('click', () => this.resetCurrent());
+        document.getElementById('duplicateSlide').addEventListener('click', () => this.duplicateCurrent());
+        document.getElementById('exportSlide').addEventListener('click', () => this.exportImage());
+        document.getElementById('saveJSON').addEventListener('click', () => this.saveJSON());
+        document.getElementById('btnLoadJSON').addEventListener('click', () => {
+            document.getElementById('loadJSON').click();
+        });
+        document.getElementById('loadJSON').addEventListener('change', (e) => this.loadJSON(e));
+        
+        // Cores
+        document.getElementById('primaryColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--drc-primary', e.target.value);
+        });
+        document.getElementById('accentColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--drc-accent', e.target.value);
+        });
+        document.getElementById('alertColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--drc-alert', e.target.value);
+        });
+        
+        // Tema
+        document.getElementById('toggleTheme').addEventListener('click', () => {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            html.setAttribute('data-theme', current === 'dark' ? '' : 'dark');
+        });
+        
+        // Zoom
+        document.getElementById('zoomIn').addEventListener('click', () => this.setZoom(0.1));
+        document.getElementById('zoomOut').addEventListener('click', () => this.setZoom(-0.1));
+        
+        // Content Editable listener (delegation)
+        document.getElementById('slidesContainer').addEventListener('input', (e) => {
+            if (e.target.hasAttribute('contenteditable') && e.target.isContentEditable) {
+                this.handleContentEdit(e);
+            }
+        });
+    },
+    
+    toggleEditMode() {
+        const container = document.getElementById('slidesContainer');
+        const status = document.getElementById('editStatus');
+        const button = document.getElementById('toggleEdit');
+        
+        if (AppState.isEditing) {
+            container.classList.add('editing');
+            status.textContent = 'ON';
+            button.classList.add('active');
+            this.enableContentEdit(true);
+        } else {
+            container.classList.remove('editing');
+            status.textContent = 'OFF';
+            button.classList.remove('active');
+            this.enableContentEdit(false);
+        }
+    },
+    
+    enableContentEdit(enable) {
+        const elements = document.querySelectorAll('.slide.active [contenteditable]');
+        elements.forEach(el => {
+            el.setAttribute('contenteditable', enable);
+        });
+    },
+    
+    handleContentEdit(e) {
+        const slide = e.target.closest('.slide');
+        if (!slide) return;
+        
+        const slideIndex = parseInt(slide.dataset.slide) - 1;
+        const key = this.inferDataKey(e.target);
+        
+        if (key) {
+            AppState.update(slideIndex, key, e.target.textContent);
+        }
+    },
+    
+    inferDataKey(element) {
+        // Inferir qual chave do objeto está sendo editada baseado na classe
+        const classes = element.className.split(' ');
+        const classMap = {
+            'slide-1__title': 'title',
+            'slide-1__header': 'header',
+            'slide-2__quote': 'quote',
+            'slide-2__text': 'text',
+            'slide-3__title': 'title',
+            'slide-3__context': 'context',
+            'slide-3__point': 'points',
+            'slide-4__title': 'title'
+        };
+        
+        for (let cls of classes) {
+            if (classMap[cls]) return classMap[cls];
+        }
+        return null;
+    },
+    
+    navigate(direction) {
+        const slides = document.querySelectorAll('.slide');
+        const newIndex = AppState.currentSlide + direction;
+        
+        if (newIndex >= 0 && newIndex < slides.length) {
+            slides[AppState.currentSlide].classList.remove('active');
+            AppState.currentSlide = newIndex;
+            slides[AppState.currentSlide].classList.add('active');
+            this.updateCounter();
+            this.renderThumbs();
+            
+            if (AppState.isEditing) {
+                this.enableContentEdit(true);
+            }
+        }
+    },
+    
+    jumpTo(index) {
+        const slides = document.querySelectorAll('.slide');
+        slides[AppState.currentSlide].classList.remove('active');
+        AppState.currentSlide = index;
+        slides[AppState.currentSlide].classList.add('active');
+        this.updateCounter();
+        this.renderThumbs();
+    },
+    
+    updateCounter() {
+        document.getElementById('slideCounter').textContent = 
+            String(AppState.currentSlide + 1).padStart(2, '0') + ' / 08';
+    },
+    
+    resetCurrent() {
+        if (confirm('Resetar este slide para o conteúdo padrão?')) {
+            AppState.reset(AppState.currentSlide);
+            AppRenderer.renderAll();
+            this.jumpTo(AppState.currentSlide);
+        }
+    },
+    
+    duplicateCurrent() {
+        // Nota: Como temos 8 slides fixos, duplicação cria uma cópia do estado
+        // na memória (mas visualmente mantemos 8). Para um sistema real,
+        // expandiríamos o array de slides.
+        const newLength = AppState.duplicate(AppState.currentSlide);
+        alert(`Slide duplicado! Total de variações: ${newLength}`);
+    },
+    
+    setZoom(delta) {
+        AppState.zoom = Math.max(0.3, Math.min(1.2, AppState.zoom + delta));
+        document.getElementById('slidesContainer').style.transform = `scale(${AppState.zoom})`;
+        document.getElementById('zoomLevel').textContent = Math.round(AppState.zoom * 100) + '%';
+    },
+    
+    async exportImage() {
+        const slide = document.querySelector('.slide.active');
+        const button = document.getElementById('exportSlide');
+        const originalText = button.innerHTML;
+        
+        button.innerHTML = '<span class="icon">⏳</span> Gerando...';
+        button.disabled = true;
+        
+        try {
+            // Remove bordas de edição temporariamente
+            const wasEditing = AppState.isEditing;
+            if (wasEditing) {
+                slide.classList.remove('editing');
+            }
+            
+            const canvas = await html2canvas(slide, {
+                width: 1080,
+                height: 1350,
+                scale: 1,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: null,
+                logging: false
+            });
+            
+            const link = document.createElement('a');
+            link.download = `drc-slide-${String(AppState.currentSlide + 1).padStart(2, '0')}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            
+            if (wasEditing) {
+                slide.classList.add('editing');
+            }
+        } catch (err) {
+            alert('Erro ao exportar: ' + err.message);
+        } finally {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    },
+    
+    saveJSON() {
+        const data = AppState.exportJSON();
+        const blob = new Blob([data], {type: 'application/json'});
+        const link = document.createElement('a');
+        link.download = 'drc-carrossel-config.json';
+        link.href = URL.createObjectURL(blob);
+        link.click();
+    },
+    
+    loadJSON(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            if (AppState.importJSON(event.target.result)) {
+                AppRenderer.renderAll();
+                this.jumpTo(0);
+                alert('Configuração carregada com sucesso!');
+            } else {
+                alert('Arquivo JSON inválido');
+            }
+        };
+        reader.readAsText(file);
+    },
+    
+    renderThumbs() {
+        const container = document.getElementById('slideThumbs');
+        container.innerHTML = '';
+        
+        for (let i = 0; i < 8; i++) {
+            const thumb = document.createElement('div');
+            thumb.className = 'thumb' + (i === AppState.currentSlide ? ' active' : '');
+            thumb.textContent = String(i + 1).padStart(2, '0');
+            thumb.onclick = () => this.jumpTo(i);
+            container.appendChild(thumb);
+        }
+    }
+};

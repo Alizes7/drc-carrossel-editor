@@ -1,0 +1,35 @@
+window.slideComponents.slide3 = {
+    id: 3,
+    name: "Contexto",
+    defaultData: {
+        header: "CONTEXTO",
+        title: "Título que apresenta o panorama do tema",
+        context: "Bloco de texto contextual com dados, cenário ou problema jurídico relevante. Linguagem acessível e direta para o leitor.",
+        points: [
+            "Primeiro ponto de contexto relevante para o tema",
+            "Segundo dado ou elemento de suporte informativo",
+            "Terceiro ponto que complementa o cenário apresentado"
+        ],
+        footer: "DRC Advogados",
+        counter: "03 / 08"
+    },
+    
+    render(data) {
+        const pointsHtml = data.points.map(point => 
+            `<div class="slide-3__point" contenteditable="false">${point}</div>`
+        ).join('');
+        
+        return `
+            <div class="slide slide-3" data-slide="3">
+                <div class="slide-3__header" contenteditable="false">${data.header}</div>
+                <h2 class="slide-3__title" contenteditable="false">${data.title}</h2>
+                <p class="slide-3__context" contenteditable="false">${data.context}</p>
+                <div class="slide-3__points">${pointsHtml}</div>
+                <div class="slide-3__footer">
+                    <span>${data.footer}</span>
+                    <span>${data.counter}</span>
+                </div>
+            </div>
+        `;
+    }
+};

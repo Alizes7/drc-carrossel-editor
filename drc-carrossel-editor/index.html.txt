@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRC Carrossel Editor | Sistema de Conteúdo Jurídico</title>
+    
+    <!-- Fonts: Playfair Display + Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Lib para exportação (leve e eficiente) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar de Edição -->
+        <aside class="editor-panel">
+            <header class="panel-header">
+                <h1>DRC Editor</h1>
+                <span class="badge">v1.0</span>
+            </header>
+
+            <div class="panel-section">
+                <h3>Controles de Edição</h3>
+                <button id="toggleEdit" class="btn btn-primary">
+                    <span class="icon">✎</span> Modo Edição: <span id="editStatus">OFF</span>
+                </button>
+                <button id="resetSlide" class="btn btn-secondary">Resetar Slide</button>
+                <button id="duplicateSlide" class="btn btn-secondary">Duplicar Slide</button>
+            </div>
+
+            <div class="panel-section">
+                <h3>Identidade Visual</h3>
+                <div class="color-control">
+                    <label>Cor Primária</label>
+                    <input type="color" id="primaryColor" value="#1e3a5f">
+                </div>
+                <div class="color-control">
+                    <label>Cor de Destaque</label>
+                    <input type="color" id="accentColor" value="#c9a961">
+                </div>
+                <div class="color-control">
+                    <label>Cor de Alerta</label>
+                    <input type="color" id="alertColor" value="#d4a574">
+                </div>
+                <button id="toggleTheme" class="btn btn-ghost">Alternar Tema Escuro</button>
+            </div>
+
+            <div class="panel-section">
+                <h3>Ações</h3>
+                <button id="exportSlide" class="btn btn-export">
+                    <span class="icon">↓</span> Exportar PNG (1080×1350)
+                </button>
+                <button id="saveJSON" class="btn btn-secondary">Salvar Estrutura (JSON)</button>
+                <input type="file" id="loadJSON" accept=".json" hidden>
+                <button id="btnLoadJSON" class="btn btn-secondary">Carregar JSON</button>
+            </div>
+
+            <div class="panel-section navigation">
+                <h3>Navegação</h3>
+                <div class="nav-controls">
+                    <button id="prevSlide" class="btn btn-nav">← Anterior</button>
+                    <span id="slideCounter" class="counter">01 / 08</span>
+                    <button id="nextSlide" class="btn btn-nav">Próximo →</button>
+                </div>
+                <div class="slide-thumbs" id="slideThumbs"></div>
+            </div>
+        </aside>
+
+        <!-- Área de Preview -->
+        <main class="preview-area">
+            <div class="canvas-wrapper">
+                <div id="slidesContainer" class="slides-container">
+                    <!-- Slides renderizados via JS -->
+                </div>
+            </div>
+            <div class="zoom-controls">
+                <button id="zoomOut">-</button>
+                <span id="zoomLevel">100%</span>
+                <button id="zoomIn">+</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./js/components/slide1.js"></script>
+    <script src="./js/components/slide2.js"></script>
+    <script src="./js/components/slide3.js"></script>
+    <script src="./js/components/slide4.js"></script>
+    <script src="./js/components/slide5.js"></script>
+    <script src="./js/components/slide6.js"></script>
+    <script src="./js/components/slide7.js"></script>
+    <script src="./js/components/slide8.js"></script>
+    <script src="./js/slides.js"></script>
+    <script src="./js/editor.js"></script>
+    <script src="./js/app.js"></script>
+</body>
+</html>
